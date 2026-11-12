@@ -1,0 +1,78 @@
+/* ==========================================================================
+   GIAO DIỆN TỐI (DARK MODE) CỦA WEBSITE — tham khảo hai thiết kế Canva "LAPTOP RADAR VINH" và "MOBIE RADAR VINH".
+   - Chỉ BỔ SUNG: toàn bộ quy tắc nằm dưới html[data-theme="dark"]; giao diện sáng (main.css) không bị sửa, nên khi về Light mọi màu cũ tự trở lại.
+   - Chỉ đổi màu/lớp phủ của website (nền trang, dải nền chữ, thẻ chữ, tiêu đề, lớp phủ ảnh). Không đổi bố cục, kích thước, chuyển động.
+   - TÁCH BIỆT với thời tiết: không có quy tắc nào nhắm vào .rv-weather / #rv-weather / iframe bảng, không dùng filter, opacity, invert hay
+     thuộc tính toàn cục nào lên phần tử cha của bảng. Bảng thời tiết có hệ màu ngày/đêm riêng theo logic thời tiết.
+   - Không đổi <meta name="color-scheme"> (đổi sẽ làm iframe trong suốt của bảng bị nền đặc).
+   Màu là ước lượng từ ảnh xem trước Canva: chỉnh tại 6 biến ngay dưới đây.
+   ========================================================================== */
+html[data-theme="dark"]{
+  --rvd-bg:#0a1226;                       /* nền trang, khe giữa các ảnh (xanh đen gần như đen) */
+  --rvd-band:#0a1428;                     /* ba dải nền chữ (laptop) */
+  --rvd-wx:37,57,87;                      /* MÀU CỐ ĐỊNH của kính bảng thời tiết/viên thuốc (#253957) ở giao diện tối; không đổi theo ngày/đêm */
+  --rvd-card-rgb:31,46,80;                /* màu thẻ chữ mobile (kính, độ trong suốt .78 như bản sáng) */
+  --rvd-ink:#22335c;                      /* chữ navy trên ô sáng */
+  --rvd-text:#fff8e1;                     /* MÀU CHỮ CHUNG (tiêu đề, chữ ở các nút, chữ chính trong bảng thời tiết) — theo Canva */
+  --rvd-title:var(--rvd-text);
+  --rvd-float:#16213a;                    /* nền khi ở chế độ nổi ảnh */
+  --rvd-tint:.08;                         /* lớp phủ tối trên ảnh: rất nhẹ (ảnh trong Canva vẫn rực) */
+  --band:var(--rvd-band);                 /* biến sẵn có của ba dải (độ đặc --band-opacity giữ như bản sáng) */
+}
+
+/* Nền */
+html[data-theme="dark"],html[data-theme="dark"] body,
+html[data-theme="dark"] #home,html[data-theme="dark"] .stage,
+html[data-theme="dark"].mobile #home,html[data-theme="dark"].mobile #cards,
+html[data-theme="dark"] #nj{background:var(--rvd-bg)}
+html[data-theme="dark"] #veil{background:var(--rvd-bg)}
+html[data-theme="dark"].float-on.float-hov .stage,
+html[data-theme="dark"].mobile.float-on.float-hov #cards{background-color:var(--rvd-float)}
+
+/* Chữ */
+html[data-theme="dark"] .title{color:var(--rvd-title)}
+/* vầng sáng ấm quanh tiêu đề như bản Canva laptop (dùng :where để hiệu ứng hover/nhấn sẵn có vẫn ưu tiên hơn) */
+html[data-theme="dark"] :where(.title) .txt{text-shadow:0 0 8px rgba(255,248,225,.26),0 0 20px rgba(255,248,225,.13)}
+html[data-theme="dark"] :where(.item) .txt{text-shadow:0 0 6px rgba(255,248,225,.16)}
+/* chữ ở các nút (laptop + mobile) cùng màu #fff8e1; vầng sáng khi rê chuột/nhấn cũng chuyển sang kem */
+html[data-theme="dark"] .item,html[data-theme="dark"] .mpage .m:not(.mt-cell){color:var(--rvd-text)}
+html[data-theme="dark"] .item,html[data-theme="dark"] .txt,html[data-theme="dark"] .mpage .m{--glow:255,248,225}
+html[data-theme="dark"] .title-link:hover .txt,html[data-theme="dark"] .title-link:focus-visible .txt{--glow:255,243,196}
+html[data-theme="dark"] .mpage .mtitle a{color:var(--rvd-title);text-shadow:0 0 8px rgba(255,248,225,.24),0 0 18px rgba(255,248,225,.12)}
+
+/* Thẻ chữ mobile */
+/* thẻ mobile (Liquid Glass): GIỮ NGUYÊN cấu trúc của weather-board.css (lớp sáng gradient 160deg, blur nền, viền, bóng) - chỉ thay màu nền xanh rgba(73,101,146,.78) bằng màu tối cùng độ trong suốt .78 */
+html[data-theme="dark"].mobile .mpage .m:not(.mt-cell){background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,0) 50%,rgba(255,255,255,.07)),rgba(var(--rvd-card-rgb),.78)}
+html[data-theme="dark"] .mpage .m.mt-cell{color:var(--rvd-ink)}
+html[data-theme="dark"] #nj .c{background:rgba(var(--rvd-card-rgb),.78)}
+html[data-theme="dark"] #nj .ct{color:var(--rvd-ink)}
+
+/* Lớp phủ khi chọn nổi ảnh (đang là xanh #496592 ở giao diện sáng) */
+html[data-theme="dark"] .tile::after,html[data-theme="dark"] .mf::after{background:var(--rvd-band)}
+
+/* Ảnh: phủ tối xanh đêm nhẹ ở một lớp riêng nằm TRÊN ảnh, DƯỚI chữ/dải (ảnh đang được chọn nổi lên vẫn nằm trên lớp này nên vẫn sáng).
+   Phần tử luôn tồn tại (trong suốt ở giao diện sáng) để màu chuyển được mềm; không nhận chuột. */
+.lyr-img::after,.mlayer::after{content:"";position:absolute;inset:0;z-index:40;pointer-events:none;background:#081028;opacity:0}
+html[data-theme="dark"] .lyr-img::after,html[data-theme="dark"] .mlayer::after{opacity:var(--rvd-tint)}
+/* lớp ảnh mobile không tự tạo ngữ cảnh xếp chồng: cô lập để lớp phủ chỉ nằm TRÊN ảnh, còn thẻ chữ và tiêu đề (lớp .mtext) vẫn nằm trên cùng */
+html[data-theme="dark"] .mlayer{isolation:isolate}
+
+/* BẢNG THỜI TIẾT (giao diện tối): lớp phủ màu navy giống ba dải ngang, bất kể bảng đang ở ngày hay đêm. Đây là lớp kính NẰM SAU bảng (ngoài iframe);
+   nội dung, biểu tượng, hình nền và hiệu ứng bên trong bảng không bị đổi. */
+/* BẢNG THỜI TIẾT (giao diện tối): không còn lớp phủ riêng ở ngoài; kính gốc (blur, viền, bóng, highlight) nguyên vẹn. Màu cố định --rvd-wx được áp bên trong khung (weather-board.js, html.rv-dm). */
+
+/* Chuyển màu mềm: chỉ bật trong ~1 giây sau khi người dùng gạt nút (lúc tải trang không có hiệu ứng chuyển) */
+html.rvt-anim,html.rvt-anim body,html.rvt-anim #home,html.rvt-anim .stage,html.rvt-anim #cards,
+html.rvt-anim .band,html.rvt-anim .title,html.rvt-anim .mpage .mtitle a,html.rvt-anim #veil{transition:background-color .6s ease,color .6s ease}
+html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:opacity .6s ease}
+@media (prefers-reduced-motion:reduce){
+  html.rvt-anim,html.rvt-anim *,html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:none!important}
+}/* BẢNG THỜI TIẾT (giao diện tối): KHÔNG còn lớp phủ riêng ở ngoài; kính gốc (blur, viền, bóng, highlight) nguyên vẹn. Màu cố định --rvd-wx được áp bên trong khung (weather-board.js, html.rv-dm). */
+
+/* Chuyển màu mềm: chỉ bật trong ~1 giây sau khi người dùng gạt nút (lúc tải trang không có hiệu ứng chuyển) */
+html.rvt-anim,html.rvt-anim body,html.rvt-anim #home,html.rvt-anim .stage,html.rvt-anim #cards,
+html.rvt-anim .band,html.rvt-anim .title,html.rvt-anim .mpage .mtitle a,html.rvt-anim #veil{transition:background-color .6s ease,color .6s ease}
+html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:opacity .6s ease}
+@media (prefers-reduced-motion:reduce){
+  html.rvt-anim,html.rvt-anim *,html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:none!important}
+}
