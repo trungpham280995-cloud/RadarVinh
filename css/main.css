@@ -1,0 +1,177 @@
+@font-face{font-family:'Anton';font-weight:400;font-display:swap;src:url(../assets/fonts/anton-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Anton';font-weight:400;font-display:swap;src:url(../assets/fonts/anton-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Anton';font-weight:400;font-display:swap;src:url(../assets/fonts/anton-vietnamese.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+
+/* ===== Thông số lấy từ thiết kế Canva (khung 1366 x 685) ===== */
+:root{
+  --band:#496592; --band-opacity:.6;      /* 3 thanh nền chữ */
+  --font:'Anton','Impact','Arial Narrow',sans-serif;
+  --drift:9%;                              /* quãng trôi ngang khi vào trang (trái -> phải) */
+  --drift-time:2.3s;                       /* thời gian trôi */
+  --glow:255,255,255; --gold:242,196,109;
+  --ink-small:#fff8e1;                     /* màu chữ nhỏ trên các ô (tiêu đề lớn vẫn trắng) */
+}
+*{box-sizing:border-box;margin:0}
+html.has-radar,html.has-radar *{cursor:none!important}
+html,body{margin:0;background:#fff}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+#home{display:block;background:#fff}
+.stage{position:relative;overflow:hidden;background:#fff;width:100%;height:100vh}
+/* mọi thứ vẽ trong khung 1366px rồi co theo màn hình */
+.canvas{position:absolute;left:0;top:0;width:1366px;height:685px;transform-origin:0 0}
+.tile{position:absolute;overflow:hidden;border-radius:22px;transform:rotate(-50.29848804955051deg)}
+.tile img{position:absolute;max-width:none;transform-origin:center}
+.tile-wrap{position:absolute;inset:0;animation-delay:calc(var(--d) * .06s)}
+.band{position:absolute;left:-133.8px;width:1634px;height:128px;background:var(--band);opacity:var(--band-opacity)}
+.title{margin:0;position:absolute;left:491.3px;top:110.7px;width:923.26px;height:181.9px;color:#fff;white-space:nowrap;
+  font:400 153.17px/1.4 var(--font);pointer-events:none}
+.title-link{pointer-events:auto;display:inline-block;line-height:1.1;color:inherit;text-decoration:none;outline:none;-webkit-tap-highlight-color:transparent}
+
+/* ===== Hiệu ứng động: trôi ngang từ trái sang phải ===== */
+@keyframes drift{from{opacity:0;transform:translateX(calc(var(--drift) * -1))}to{opacity:1;transform:none}}
+.tile-wrap,.band,.title,.item{animation:drift var(--drift-time) cubic-bezier(.22,.7,.2,1) both}
+/* Sau khi xoay màn hình đổi bố cục: hiện thẳng trạng thái cuối, không chạy lại hiệu ứng mở đầu */
+html.rv-nointro .tile-wrap,html.rv-nointro .band,html.rv-nointro .title,html.rv-nointro .item{animation:none}
+/* Chuyển bố cục khi xoay điện thoại: mờ đi -> đổi bố cục -> hiện lại */
+#home{transition:opacity .34s ease}
+html.rv-switch #home,html.rv-switch #rv-weather{opacity:0!important;pointer-events:none!important}
+html.rv-switch #home{transition:opacity .18s ease}
+html.rv-switch #rv-weather{transition:opacity .18s ease!important}
+html.rv-sw2 .rv-weather .rv-weather-box{transition:none!important}
+a.item,a.m,.title-link{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.title{animation-delay:.25s}
+.band{animation-name:driftband;animation-delay:.1s}
+@keyframes driftband{from{opacity:0;transform:translateX(calc(var(--drift) * -1))}to{opacity:var(--band-opacity);transform:none}}
+.item{animation-delay:calc(.35s + var(--c,0) * .08s)}
+
+/* ===== Nút chữ ===== */
+.item{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--ink-small);text-decoration:none;
+  font:400 28.0081px/1.4 var(--font);-webkit-tap-highlight-color:transparent;outline:none}
+.txt{position:relative;display:inline-block;white-space:nowrap;will-change:transform;transform:translateZ(0) scale(1);
+  transition:transform .6s cubic-bezier(.22,1,.36,1),text-shadow .5s ease,filter .5s ease}
+.item:hover .txt,.item:focus-visible .txt,.title-link:hover .txt,.title-link:focus-visible .txt{transform:translateZ(0) scale(1.09);filter:brightness(1.15);
+  text-shadow:0 0 8px rgba(var(--glow),.9),0 0 22px rgba(var(--glow),.55);
+  transition:transform .5s cubic-bezier(.34,1.4,.64,1),text-shadow .35s ease-out,filter .35s ease-out}
+.item.press .txt,.item:active .txt,.title-link.press .txt,.title-link:active .txt{transform:translateZ(0) translateY(1.5px) scale(.94);filter:brightness(1.05);
+  text-shadow:0 0 6px rgba(var(--glow),.6);
+  transition:transform .2s cubic-bezier(.3,0,.2,1),text-shadow .2s ease-out,filter .2s ease-out}
+
+/* ===== Điện thoại / máy tính bảng dọc: tái tạo đúng thiết kế Canva "MOBIE RADAR VINH" (trang 685 x 1386) =====
+   Mọi toạ độ/kích thước lấy trực tiếp từ Canva (đơn vị thiết kế), cả trang co theo --u = bề ngang / 685. Cùng 15 mục + URL với desktop. */
+#cards{display:none}
+html.mobile .radar-cursor{display:none!important}
+html.mobile.has-radar,html.mobile.has-radar *{cursor:auto!important}
+html.mobile #home{min-height:0;background:#fff}
+html.mobile .stage{display:none}
+html.mobile #cards{display:block;position:relative;width:var(--cw);height:var(--sh);margin:0 auto;overflow:hidden;background:#fff}
+.mpage{position:absolute;left:0;top:0;width:685px;height:1386px;transform-origin:0 0;transform:scale(var(--u,1))}
+.mlayer{position:absolute;inset:0}
+.mf{position:absolute;overflow:hidden;border-radius:28.6px;transform:rotate(-140.2984880495505deg)}
+.mfl{position:absolute;inset:0}
+.mf img{position:absolute;max-width:none;transform-origin:0 0;user-select:none;-webkit-user-drag:none}
+.mpage .m{position:absolute;width:165px;height:165px;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  background:#496592;color:var(--ink-small);text-decoration:none;border-radius:8.8px;font:400 26.667px/1.4 var(--font);touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  transition:transform .45s cubic-bezier(.22,1,.36,1),filter .3s}
+.mpage .m.mt-cell{background:rgba(255,255,255,.7);color:#496592;justify-content:flex-start;align-items:flex-start;padding:10.17px 0 0 8.24px;text-align:left;font-size:46.667px;line-height:1.1}
+.mpage .m:active,.mpage .m.press{transform:scale(.95);filter:brightness(1.12);transition-duration:.2s}
+@media (hover:hover){ .mpage .m:hover{filter:brightness(1.12)} }
+.mpage .m:focus-visible,.mpage .mtitle a:focus-visible{outline:4px solid #fff;outline-offset:-8px}
+.mpage .mtitle{position:absolute;left:-223.04346px;top:552.78034px;width:1472.32887px;height:288.73367px;margin:0;pointer-events:none}
+.mpage .mtitle a{display:flex;align-items:center;justify-content:center;width:100%;height:100%;transform:rotate(90deg);pointer-events:none;color:#fff;text-decoration:none;white-space:nowrap;font:400 241.333px/1.4 var(--font);-webkit-tap-highlight-color:transparent}
+.mpage .mtitle a span{pointer-events:auto}
+html.mobile{--exit-time:.2s}
+
+/* ===== Chế độ nổi ảnh — BẢN ĐIỆN THOẠI (lấy từ bản máy tính) =====
+   Nhấn giữ ~3 giây Ở BẤT KỲ VỊ TRÍ NÀO: lớp ảnh phía sau tiến lên trước, lớp chữ + ô phía trước lùi ra sau và tan dần; hai lớp đi xuyên qua nhau.
+   Khi đang ở chế độ này: chạm/rê lên ảnh nào thì ảnh đó nổi lên, các ảnh khác tối đi. Chạm 1 lần để thoát (chuyển cảnh ngược lại, không mở link).
+   Các lớp 3D chỉ được áp dụng trong lúc chế độ này chạy (.float-3d) nên giao diện thường giữ nguyên 100%. */
+html.mobile .mtext{position:absolute;inset:0;pointer-events:none}
+html.mobile .mtext .m{pointer-events:auto}   /* lớp chữ không chặn chạm, nhưng 15 ô vẫn bấm được (chữ tiêu đề giữ nguyên quy tắc gốc) */
+html.mobile #cards,html.mobile .mpage,html.mobile .mpage *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+html.mobile #cards{transition:background-color .4s cubic-bezier(.3,.1,.2,1)}
+.mf::after{content:"";position:absolute;inset:0;background:#496592;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.3,.1,.2,1)}
+html.mobile .mf img{transition:filter .4s cubic-bezier(.3,.1,.2,1)}
+html.mobile.float-3d .mpage{perspective:1500px;perspective-origin:50% 50%;transform-style:preserve-3d}
+html.mobile.float-3d .mlayer,html.mobile.float-3d .mtext{transform-origin:50% 50%}
+html.mobile.float-3d .mlayer{z-index:1;translate:0 0 var(--zr);scale:1.04}
+html.mobile.float-3d .mtext{z-index:2}
+html.mobile.float-on .mlayer{translate:0 0 var(--zf);scale:1}
+html.mobile.float-on .mtext{translate:0 0 var(--zb);opacity:0}
+html.mobile.float-3d.float-on .mlayer,html.mobile.float-3d.float-on .mtext,html.mobile.float-3d.float-out .mlayer,html.mobile.float-3d.float-out .mtext{transition:translate var(--lyr-dur) var(--lyr-ease),scale var(--lyr-dur) var(--lyr-ease)}
+html.mobile.float-on .mtext,html.mobile.float-on .mtext *{pointer-events:none!important}
+html.mobile.float-in .mtext{animation:txtOut var(--lyr-dur) linear}
+html.mobile.float-out .mtext{animation:txtIn var(--lyr-dur) linear}
+html.mobile.float-on,html.mobile.float-on body,html.mobile.float-on #cards{touch-action:none}
+html.mobile.float-3d .mf{transition:opacity var(--lyr-dur) var(--lyr-ease),scale var(--float-fall) var(--float-ease-out),translate var(--float-fall) var(--float-ease-out),box-shadow var(--float-fall) var(--float-ease-out)}
+.mlayer>.mf.up{z-index:50}
+.mlayer>.mf.up.top{z-index:61}
+html.mobile.float-on.float-hov .mf:not([data-lv])::after{opacity:.42;transition-duration:.4s}
+html.mobile.float-on.float-hov .mf:not([data-lv]) img{filter:brightness(.76) saturate(.9);transition-duration:.4s}
+html.mobile.float-on.float-hov #cards{background-color:#8791a0}
+html.mobile.float-on .mf[data-lv="2"]{opacity:1;scale:1.045;translate:0 -7px;
+  box-shadow:0 20px 40px rgba(7,24,48,.42),0 6px 14px rgba(7,24,48,.26),0 0 0 1px rgba(255,255,255,.45),0 0 10px rgba(255,255,255,.4),0 0 24px rgba(255,255,255,.2);
+  transition:opacity .6s ease,scale var(--float-rise) var(--float-ease-in),translate var(--float-rise) var(--float-ease-in),box-shadow var(--float-rise) var(--float-ease-in)}
+html.mobile.float-on .mf[data-lv="2"]::after{opacity:0;transition-duration:var(--float-rise);transition-timing-function:var(--float-ease-in)}
+html.mobile.float-on .mf[data-lv="2"] img{filter:brightness(1.05) saturate(1.03);transition-duration:var(--float-rise);transition-timing-function:var(--float-ease-in)}
+
+/* ===== Chuyển cảnh Exit: ngược với Enter (trôi lùi ra phía sau, thu nhẹ, mờ dần + phủ trắng mờ) ===== */
+:root{--exit-time:.48s;--exit-ease:cubic-bezier(.5,0,.75,.35)}
+@keyframes exitout{from{opacity:1;transform:none;filter:none}
+  to{opacity:0;transform:translateX(calc(var(--drift) * -1)) scale(.94);filter:brightness(1.7) blur(2px)}}
+@keyframes exitband{from{opacity:var(--band-opacity);transform:none;filter:none}
+  to{opacity:0;transform:translateX(calc(var(--drift) * -1)) scale(.94);filter:brightness(1.7) blur(2px)}}
+html.leaving .tile-wrap,html.leaving .title,html.leaving .item,html.leaving .m,html.leaving .mtitle,html.leaving .mlayer{
+  animation:exitout var(--exit-time) var(--exit-ease) both;pointer-events:none}
+html.leaving .band{animation:exitband var(--exit-time) var(--exit-ease) both}
+html.leaving .item{animation-delay:calc((4 - var(--c,0)) * .03s)}
+html.leaving .tile-wrap{animation-delay:calc(var(--d) * .015s + .06s)}
+html.leaving .band{animation-delay:.04s}
+html.leaving .title{animation-delay:.08s}
+#veil{position:fixed;inset:0;z-index:9000;pointer-events:none;background:#fff;opacity:0}
+html.leaving #veil{opacity:.9;transition:opacity calc(var(--exit-time) * .8) cubic-bezier(.5,0,.75,.35) .12s}
+
+/* ===== Hai lớp không gian: LỚP ẢNH <-> LỚP CHỮ (chế độ nổi ảnh: nhấn giữ ~3 giây trên ảnh; nhấn 1 lần để thoát) =====
+   .lyr-text : chữ, tiêu đề, 3 dải màu (bình thường nằm TRÊN)      .lyr-img : toàn bộ ảnh (bình thường nằm DƯỚI)
+   Trên <html>:  float-on    = đích của chuyển cảnh (ảnh tiến lên/phóng nhẹ, chữ lùi xuống/thu nhỏ)
+                 float-front = ảnh đã lên lớp trên (đổi z-index đúng lúc hai lớp đang ngang nhau, giữa chuyển cảnh)
+   Vào và thoát dùng CHUNG các transition nên hai chiều chuyển động đối xứng nhau; ảnh không bao giờ bị blur. */
+:root{--lyr-dur:1.8s;--lyr-ease:cubic-bezier(.45,.05,.25,1);--zr:-60px;--zf:70px;--zb:-80px;--float-rise:.55s;--float-fall:.75s;--float-ease-in:cubic-bezier(.4,0,.15,1);--float-ease-out:cubic-bezier(.25,.1,.25,1)}
+/* Hai mặt phẳng song song trong không gian 3D, mỗi mặt phẳng dịch CHUNG một lượng nên toàn bề mặt nổi lên / lùi xuống đồng thời (không nghiêng).
+   Bình thường lớp ảnh nằm sau chữ 60px; scale 1.04 bù đúng phép chiếu perspective nên nhìn y hệt thiết kế gốc.
+   Vào: ảnh tiến lên, chữ lùi ra sau và tan dần; hai lớp đi xuyên qua nhau khi chữ đã mờ. Thoát: đảo ngược. Ảnh không bao giờ bị blur. */
+.canvas{perspective:1500px;perspective-origin:50% 50%;transform-style:preserve-3d}
+.lyr{position:absolute;inset:0;pointer-events:none;transform-origin:50% 50%;
+  transition:translate var(--lyr-dur) var(--lyr-ease),scale var(--lyr-dur) var(--lyr-ease)}
+.lyr-img{z-index:1;translate:0 0 var(--zr);scale:1.04}
+.lyr-text{z-index:2}
+.lyr-text>.band,.lyr-text>.item{pointer-events:auto}
+.lyr-text>.title,.lyr-img>.tile-wrap{pointer-events:none}
+html.float-on .lyr-img{translate:0 0 var(--zf);scale:1}
+html.float-on .lyr-text{translate:0 0 var(--zb);opacity:0}
+html.float-on .lyr-text,html.float-on .lyr-text>*{pointer-events:none!important}
+/* độ mờ của chữ: mờ nhanh trước lúc hai lớp ngang nhau (để không lộ bước đổi lớp), rồi tan hẳn ở phía sau */
+html.float-in .lyr-text{animation:txtOut var(--lyr-dur) linear}
+html.float-out .lyr-text{animation:txtIn var(--lyr-dur) linear}
+@keyframes txtOut{0%{opacity:1;animation-timing-function:cubic-bezier(.3,0,.5,1)}34%{opacity:.22;animation-timing-function:ease-out}100%{opacity:0}}
+@keyframes txtIn{0%{opacity:0;animation-timing-function:ease-in}58%{opacity:.22;animation-timing-function:cubic-bezier(.5,0,.7,1)}100%{opacity:1}}
+/* ảnh */
+.tile{pointer-events:auto;-webkit-user-select:none;user-select:none;
+  transition:opacity var(--lyr-dur) var(--lyr-ease),scale var(--float-fall) var(--float-ease-out),translate var(--float-fall) var(--float-ease-out),box-shadow var(--float-fall) var(--float-ease-out)}
+.tile img{-webkit-user-drag:none;user-select:none;transition:filter .4s cubic-bezier(.3,.1,.2,1)}
+.tile::after{content:"";position:absolute;inset:0;background:#496592;opacity:0;pointer-events:none;transition:opacity .4s cubic-bezier(.3,.1,.2,1)}
+.lyr-img>.tile-wrap.up{z-index:50}
+.lyr-img>.tile-wrap.up.top{z-index:61}
+/* trạng thái thấp của ảnh khi ở chế độ ảnh: tối nhẹ + phủ xanh #496592 (không blur) */
+/* Chế độ ảnh: mặc định mọi ảnh rõ nét 100%, KHÔNG phủ gì. Chỉ khi chuột đang ở trên một ảnh (float-hov) thì các ảnh còn lại mới tối xuống. */
+html.float-on.float-hov .tile:not([data-lv])::after{opacity:.42;transition-duration:.4s}
+html.float-on.float-hov .tile:not([data-lv]) img{filter:brightness(.76) saturate(.9);transition-duration:.4s}
+/* các đường trắng giữa ảnh (nền) cũng tối theo cùng mức, để chỉ còn ảnh đang trỏ nổi bật */
+.stage{transition:background-color .4s cubic-bezier(.3,.1,.2,1)}
+html.float-on.float-hov .stage{background-color:#8791a0}
+/* ảnh đang được chọn: nổi cao hơn, sáng, mất lớp phủ, viền sáng mềm + bóng đổ */
+html.float-on .tile[data-lv="2"]{opacity:1;scale:1.045;translate:0 -7px;
+  box-shadow:0 20px 40px rgba(7,24,48,.42),0 6px 14px rgba(7,24,48,.26),0 0 0 1px rgba(255,255,255,.45),0 0 10px rgba(255,255,255,.4),0 0 24px rgba(255,255,255,.2);
+  transition:opacity .6s ease,scale var(--float-rise) var(--float-ease-in),translate var(--float-rise) var(--float-ease-in),box-shadow var(--float-rise) var(--float-ease-in)}
+html.float-on .tile[data-lv="2"]::after{opacity:0;transition-duration:var(--float-rise);transition-timing-function:var(--float-ease-in)}
+html.float-on .tile[data-lv="2"] img{filter:brightness(1.05) saturate(1.03);transition-duration:var(--float-rise);transition-timing-function:var(--float-ease-in)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
