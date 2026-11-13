@@ -1,0 +1,83 @@
+/* ==========================================================================
+   GIAO DIỆN TỐI (DARK MODE) CỦA WEBSITE — tham khảo hai thiết kế Canva "LAPTOP RADAR VINH" và "MOBIE RADAR VINH".
+   - Chỉ BỔ SUNG: toàn bộ quy tắc nằm dưới html[data-theme="dark"]; giao diện sáng (main.css) không bị sửa, nên khi về Light mọi màu cũ tự trở lại.
+   - Chỉ đổi màu/lớp phủ của website (nền trang, dải nền chữ, thẻ chữ, tiêu đề, lớp phủ ảnh). Không đổi bố cục, kích thước, chuyển động.
+   - Bảng thời tiết: không có quy tắc nào ở file này nhắm vào #rv-weather / iframe bảng, không dùng filter, opacity, invert hay
+     thuộc tính toàn cục nào lên phần tử cha của bảng. Màu bên trong bảng + viên thuốc ở Dark Mode (nền cố định = màu ba dải, chữ/icon #fff8e1)
+     nằm trong js/weather-board.js (RVD_CSS), vì chúng là tài liệu iframe riêng. Ngoài ra chỉ có hai quy tắc màu chữ cho nút X / dòng "Đang tải" ở cuối file này.
+   - Không đổi <meta name="color-scheme"> (đổi sẽ làm iframe trong suốt của bảng bị nền đặc).
+   Màu là ước lượng từ ảnh xem trước Canva: chỉnh tại 6 biến ngay dưới đây.
+   ========================================================================== */
+html[data-theme="dark"]{
+  --rvd-bg:#0b1530;          /* nền trang, khe giữa các ảnh */
+  --rvd-band:#0f1c3c;        /* ba dải nền chữ (laptop) và lớp phủ khi nổi ảnh */
+  --rvd-card:rgba(30,43,80,.88);   /* thẻ chữ (mobile): navy */
+  --rvd-ink:#1f2d54;         /* chữ navy trên ô "ĐỘI RADAR VINH" sáng (mobile) */
+  --rvd-title:#fff8e1;       /* tiêu đề lớn: kem nhạt (đồng bộ #fff8e1) */
+  --rvd-float:#16213a;       /* nền khi ở chế độ nổi ảnh */
+  --band:var(--rvd-band); --band-opacity:.72;   /* biến sẵn có của ba dải */
+}
+
+/* Nền */
+html[data-theme="dark"],html[data-theme="dark"] body,
+html[data-theme="dark"] #home,html[data-theme="dark"] .stage,
+html[data-theme="dark"].mobile #home,html[data-theme="dark"].mobile #cards,
+html[data-theme="dark"] #nj{background:var(--rvd-bg)}
+html[data-theme="dark"] #veil{background:var(--rvd-bg)}
+html[data-theme="dark"].float-on.float-hov .stage,
+html[data-theme="dark"].mobile.float-on.float-hov #cards{background-color:var(--rvd-float)}
+
+/* Chữ */
+html[data-theme="dark"] .title{color:var(--rvd-title)}
+html[data-theme="dark"] .title-link:hover .txt,html[data-theme="dark"] .title-link:focus-visible .txt{--glow:255,248,225}
+html[data-theme="dark"] .mpage .mtitle a{color:var(--rvd-title)}
+
+/* Thẻ chữ mobile */
+/* thẻ mobile là kính (weather-board.css: html.mobile .mpage .m:not(.mt-cell)) -> giữ nguyên lớp sáng/kính/viền/bóng, chỉ đổi màu nền xanh #496592 sang navy */
+html[data-theme="dark"].mobile .mpage .m:not(.mt-cell){background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,0) 50%,rgba(255,255,255,.07)),var(--rvd-card)}
+html[data-theme="dark"] .mpage .m:not(.mt-cell){background-color:var(--rvd-card)}
+/* ô tiêu đề "ĐỘI RADAR VINH" (mobile): GIỮ NGUYÊN màu chữ navy, chỉ đổi màu nền ô sang #fff8e1 */
+html[data-theme="dark"] .mpage .m.mt-cell{background:#fff8e1;color:var(--rvd-ink)}
+html[data-theme="dark"] .mpage .m{color:#fff8e1}
+html[data-theme="dark"] #nj .c{background:var(--rvd-card)}
+html[data-theme="dark"] #nj .c{color:#fff8e1}
+html[data-theme="dark"] #nj .ct{background:#fff8e1;color:var(--rvd-ink)}
+
+/* Lớp phủ khi chọn nổi ảnh (đang là xanh #496592 ở giao diện sáng) */
+html[data-theme="dark"] .tile::after,html[data-theme="dark"] .mf::after{background:var(--rvd-band)}
+
+/* Ảnh: phủ tối xanh đêm nhẹ ở một lớp riêng nằm TRÊN ảnh, DƯỚI chữ/dải (ảnh đang được chọn nổi lên vẫn nằm trên lớp này nên vẫn sáng).
+   Phần tử luôn tồn tại (trong suốt ở giao diện sáng) để màu chuyển được mềm; không nhận chuột. */
+.lyr-img::after,.mlayer::after{content:"";position:absolute;inset:0;z-index:40;pointer-events:none;background:#081028;opacity:0}
+html[data-theme="dark"] .lyr-img::after,html[data-theme="dark"] .mlayer::after{opacity:.38}
+/* lớp ảnh mobile không tự tạo ngữ cảnh xếp chồng: cô lập để lớp phủ chỉ nằm TRÊN ảnh, còn thẻ chữ và tiêu đề (lớp .mtext) vẫn nằm trên cùng */
+html[data-theme="dark"] .mlayer{isolation:isolate}
+
+/* Chuyển màu mềm: chỉ bật trong ~1 giây sau khi người dùng gạt nút (lúc tải trang không có hiệu ứng chuyển) */
+html.rvt-anim,html.rvt-anim body,html.rvt-anim #home,html.rvt-anim .stage,html.rvt-anim #cards,
+html.rvt-anim .band,html.rvt-anim .title,html.rvt-anim .mpage .mtitle a,html.rvt-anim #veil{transition:background-color .6s ease,color .6s ease}
+html.rvt-anim .mpage .m{transition:transform .45s cubic-bezier(.22,1,.36,1),filter .3s,background-color .6s ease,color .6s ease}
+html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:opacity .6s ease}
+@media (prefers-reduced-motion:reduce){
+  html.rvt-anim,html.rvt-anim *,html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:none!important}
+}
+
+/* Ba thanh ngang (laptop): chữ của 15 nút = kem #fff8e1 (chỉ màu chữ; quầng sáng khi rê chuột cũng chuyển sang kem cho đồng nhất) */
+html[data-theme="dark"] .item{color:#fff8e1;--glow:255,248,225}
+/* Bảng thời tiết: ký hiệu nút thu gọn (X) và dòng chờ tải nằm ở trang chính, không thuộc iframe */
+html[data-theme="dark"] .rv-neon-x,html[data-theme="dark"] .rv-neon-load{color:#fff8e1}
+
+/* Con trỏ radar (laptop): toàn bộ nét/chấm/vệt quét/vòng định vị = #fff8e1. Chỉ đổi màu; hình dạng, cỡ, tốc độ giữ nguyên (SVG do main.js dựng, CSS ghi đè thuộc tính màu). */
+html[data-theme="dark"] .radar-cursor .rc-s{stroke:#fff8e1}
+html[data-theme="dark"] .radar-cursor #rcsweep path[stroke]{stroke:#fff8e1}
+html[data-theme="dark"] .radar-cursor #rcg stop{stop-color:#fff8e1}
+html[data-theme="dark"] .radar-cursor #rcdot1{fill:#fff8e1}
+html[data-theme="dark"] .radar-cursor #rcdot2{fill:#fff8e1;stroke:#fff8e1}
+html[data-theme="dark"] .radar-cursor .rc-c,html[data-theme="dark"] .radar-cursor.rc-center .rc-c{fill:#fff8e1;stroke:#fff8e1}
+
+/* Nút gạt Sáng/Tối: khi nhấn giữ ~3 giây (chế độ nổi ảnh) lùi ra sau CÙNG bảng thời tiết: cùng thời lượng, cùng đường cong, cùng điểm tụ (tâm khung: --rvt-ox/--rvt-oy do theme-toggle.js tính từ --rvw-ox/oy).
+   Áp dụng cho cả hai giao diện (chỉ là vị trí/chuyển động, không đổi màu). */
+.rvt{transform-origin:var(--rvt-ox,50vw) var(--rvt-oy,50vh);transition:opacity .5s ease,visibility 0s linear .5s,scale var(--lyr-dur,1.8s) var(--lyr-ease,cubic-bezier(.45,.05,.25,1))}
+.rvt.rvt-on{transition:opacity .5s ease,scale var(--lyr-dur,1.8s) var(--lyr-ease,cubic-bezier(.45,.05,.25,1))}
+html.float-on .rvt{scale:.94937;opacity:0!important;pointer-events:none!important;transition:opacity var(--lyr-dur,1.8s) cubic-bezier(.2,.75,.35,1),scale var(--lyr-dur,1.8s) var(--lyr-ease,cubic-bezier(.45,.05,.25,1))!important}
+html.float-out .rvt{transition:opacity var(--lyr-dur,1.8s) cubic-bezier(.5,0,.7,.4),scale var(--lyr-dur,1.8s) var(--lyr-ease,cubic-bezier(.45,.05,.25,1))!important}
