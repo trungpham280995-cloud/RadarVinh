@@ -1,0 +1,124 @@
+/* ==========================================================================
+   NÚT GẠT NGÀY / ĐÊM — "Cloud Shift" (Pure CSS Day & Night Toggle)
+   Mã gốc được giữ nguyên thiết kế, tỉ lệ hình học và toàn bộ hiệu ứng; chỉ đổi:
+   - class/biến CSS có tiền tố rvt- (cô lập, không xung đột với website);
+   - không dùng reset/body/html/* của mã mẫu, không nhập font, không đổi nền trang;
+   - mọi kích thước (trước là rem) tính theo MỘT đơn vị --rvt-u (1rem gốc = 1 --rvt-u),
+     nên phóng to/thu nhỏ cho Laptop / Mobile mà vẫn đúng tỉ lệ thiết kế gốc (13 x 5,5);
+   - bản DỌC (Mobile) = xoay đúng 90° bản gốc.
+   Trạng thái do JS (js/theme-toggle.js) điều khiển, đồng bộ với bảng thời tiết.
+   ========================================================================== */
+.rvt{
+  /* Đơn vị: laptop rộng ~5,95vw (13 đơn vị) theo ảnh tham chiếu */
+  --rvt-u:max(4.9px,calc(5.95vw / 13));
+  --rvt-w:calc(var(--rvt-u) * 13);
+  --rvt-h:calc(var(--rvt-u) * 5.5);
+  --rvt-pad:calc(var(--rvt-u) * .5);
+  --rvt-knob:calc(var(--rvt-h) - var(--rvt-pad) * 2);
+  --rvt-travel:calc(var(--rvt-w) - var(--rvt-knob) - var(--rvt-pad) * 2);
+
+  --rvt-day-sky-1:#4aa8f0;--rvt-day-sky-2:#8ed0ff;--rvt-sun:#ffd23f;--rvt-sun-edge:#ffb000;
+  --rvt-cloud:#ffffff;--rvt-cloud-shade:#d6ecfb;
+  --rvt-night-sky-1:#0c1440;--rvt-night-sky-2:#27326f;--rvt-moon:#e3e8f4;--rvt-moon-crater:#b9c1d6;--rvt-star:#ffffff;
+  --rvt-ease-spring:cubic-bezier(0.5,1.6,0.5,1);--rvt-ease-out:cubic-bezier(0.22,1,0.36,1);--rvt-shift:.7s;
+
+  position:absolute;left:0;top:0;z-index:40;display:block;
+  width:var(--rvt-w);height:var(--rvt-h);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s linear .5s;
+}
+.rvt::after{content:"";position:absolute;inset:-6px}   /* vùng chạm rộng hơn hình nút (ngón tay) */
+.rvt.rvt-on{opacity:1;visibility:visible;transition:opacity .5s ease}
+/* BẢN DỌC (Mobile): ô chiếm H x W, bầu trời xoay 90° quanh góc trên-trái (ngày ở trên, đêm ở dưới) */
+.rvt.rvt--v{--rvt-u:calc(15.3vw / 13);width:var(--rvt-h);height:var(--rvt-w)}
+.rvt.rvt--v .rvt__sky{position:absolute;left:0;top:0;transform-origin:0 0;transform:translateX(var(--rvt-h)) rotate(90deg)}
+
+.rvt__input{position:absolute;width:1px;height:1px;opacity:0;margin:0;pointer-events:none}
+
+/* Bầu trời */
+.rvt__sky{
+  position:relative;display:block;width:var(--rvt-w);height:var(--rvt-h);border-radius:999px;overflow:hidden;
+  background:linear-gradient(135deg,var(--rvt-day-sky-1),var(--rvt-day-sky-2));
+  box-shadow:inset 0 calc(var(--rvt-u)*.25) calc(var(--rvt-u)*.625) rgba(0,0,0,.25),0 calc(var(--rvt-u)*.875) calc(var(--rvt-u)*1.875) calc(var(--rvt-u)*-.75) rgba(15,53,82,.5);
+  isolation:isolate;
+}
+/* Lớp trời đêm */
+.rvt__sky::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,var(--rvt-night-sky-1),var(--rvt-night-sky-2));opacity:0;transition:opacity var(--rvt-shift) var(--rvt-ease-out)}
+
+/* Vầng sáng sau mặt trời / mặt trăng */
+.rvt__halo{
+  position:absolute;top:50%;left:calc(var(--rvt-pad) + var(--rvt-knob) / 2);width:var(--rvt-knob);aspect-ratio:1;border-radius:50%;translate:-50% -50%;
+  box-shadow:0 0 0 calc(var(--rvt-u)*1.4) rgba(255,255,255,.14),0 0 0 calc(var(--rvt-u)*2.8) rgba(255,255,255,.1),0 0 0 calc(var(--rvt-u)*4.2) rgba(255,255,255,.07);
+  transition:left var(--rvt-shift) var(--rvt-ease-spring);
+}
+
+/* Mặt trời -> mặt trăng */
+.rvt__knob{
+  position:absolute;top:var(--rvt-pad);left:var(--rvt-pad);width:var(--rvt-knob);height:var(--rvt-knob);border-radius:999px;
+  background:radial-gradient(circle at 35% 35%,#fff3b0,var(--rvt-sun) 45%,var(--rvt-sun-edge));
+  box-shadow:inset calc(var(--rvt-u)*-.25) calc(var(--rvt-u)*-.3125) calc(var(--rvt-u)*.5) rgba(0,0,0,.15),0 calc(var(--rvt-u)*.25) calc(var(--rvt-u)*.625) rgba(0,0,0,.25);
+  overflow:hidden;
+  transition:translate var(--rvt-shift) var(--rvt-ease-spring),width .25s var(--rvt-ease-out),background var(--rvt-shift) var(--rvt-ease-out);
+}
+/* Hố trên mặt trăng (ẩn vào ban ngày) */
+.rvt__knob::before,.rvt__knob::after{
+  content:"";position:absolute;border-radius:50%;background:var(--rvt-moon-crater);
+  box-shadow:inset calc(var(--rvt-u)*.0625) calc(var(--rvt-u)*.125) calc(var(--rvt-u)*.1875) rgba(0,0,0,.2);
+  opacity:0;scale:.4;transition:opacity .4s var(--rvt-ease-out),scale .4s var(--rvt-ease-out);
+}
+.rvt__knob::before{top:22%;left:26%;width:28%;height:28%}
+.rvt__knob::after{top:56%;left:52%;width:18%;height:18%;
+  box-shadow:inset calc(var(--rvt-u)*.0625) calc(var(--rvt-u)*.125) calc(var(--rvt-u)*.1875) rgba(0,0,0,.2),calc(var(--rvt-u)*-1.4) calc(var(--rvt-u)*.3) 0 calc(var(--rvt-u)*-.2) var(--rvt-moon-crater)}
+
+/* Mây dựng từ một phần tử và các bóng đổ */
+.rvt__clouds{
+  position:absolute;right:calc(var(--rvt-u)*-.5);bottom:calc(var(--rvt-u)*-1.4);width:calc(var(--rvt-u)*3.4);height:calc(var(--rvt-u)*3.4);border-radius:50%;background:var(--rvt-cloud);
+  box-shadow:
+    calc(var(--rvt-u)*-2.6) calc(var(--rvt-u)*.6) 0 calc(var(--rvt-u)*-.2) var(--rvt-cloud),
+    calc(var(--rvt-u)*-4.6) calc(var(--rvt-u)*1.4) 0 calc(var(--rvt-u)*-.4) var(--rvt-cloud),
+    calc(var(--rvt-u)*1.6) calc(var(--rvt-u)*-.9) 0 calc(var(--rvt-u)*.2) var(--rvt-cloud),
+    calc(var(--rvt-u)*-1.4) calc(var(--rvt-u)*-1) 0 calc(var(--rvt-u)*.4) var(--rvt-cloud-shade),
+    calc(var(--rvt-u)*-3.8) calc(var(--rvt-u)*-.2) 0 0 var(--rvt-cloud-shade);
+  transition:translate var(--rvt-shift) var(--rvt-ease-out);
+}
+
+/* Sao: chờ phía trên bầu trời vào ban ngày */
+.rvt__stars{
+  position:absolute;inset:0;
+  background-image:
+    radial-gradient(calc(var(--rvt-u)*.125) calc(var(--rvt-u)*.125) at 18% 30%,var(--rvt-star),transparent),
+    radial-gradient(calc(var(--rvt-u)*.094) calc(var(--rvt-u)*.094) at 30% 65%,var(--rvt-star),transparent),
+    radial-gradient(calc(var(--rvt-u)*.156) calc(var(--rvt-u)*.156) at 42% 25%,var(--rvt-star),transparent),
+    radial-gradient(calc(var(--rvt-u)*.094) calc(var(--rvt-u)*.094) at 22% 80%,var(--rvt-star),transparent),
+    radial-gradient(calc(var(--rvt-u)*.125) calc(var(--rvt-u)*.125) at 50% 55%,var(--rvt-star),transparent),
+    radial-gradient(calc(var(--rvt-u)*.094) calc(var(--rvt-u)*.094) at 10% 50%,var(--rvt-star),transparent),
+    radial-gradient(calc(var(--rvt-u)*.125) calc(var(--rvt-u)*.125) at 36% 42%,var(--rvt-star),transparent);
+  opacity:0;translate:0 -100%;transition:translate var(--rvt-shift) var(--rvt-ease-out),opacity var(--rvt-shift) var(--rvt-ease-out);
+}
+
+/* Trạng thái ĐÊM */
+.rvt__input:checked + .rvt__sky::before{opacity:1}
+.rvt__input:checked + .rvt__sky .rvt__halo{left:calc(var(--rvt-w) - var(--rvt-pad) - var(--rvt-knob) / 2)}
+.rvt__input:checked + .rvt__sky .rvt__knob{translate:var(--rvt-travel) 0;background:radial-gradient(circle at 35% 35%,#ffffff,var(--rvt-moon) 55%,#c4cbe0)}
+.rvt__input:checked + .rvt__sky .rvt__knob::before,.rvt__input:checked + .rvt__sky .rvt__knob::after{opacity:1;scale:1;transition-delay:.2s}
+.rvt__input:checked + .rvt__sky .rvt__clouds{translate:0 150%}
+.rvt__input:checked + .rvt__sky .rvt__stars{opacity:1;translate:0 0}
+
+/* Di chuột: nút nhích về phía bên kia (chỉ thiết bị có chuột) */
+@media (hover:hover){
+  .rvt:hover .rvt__knob{translate:calc(var(--rvt-u)*.4) 0}
+  .rvt:hover .rvt__input:checked + .rvt__sky .rvt__knob{translate:calc(var(--rvt-travel) - var(--rvt-u)*.4) 0}
+}
+/* Nhấn: nút bị ép dẹt (đàn hồi) */
+.rvt:active .rvt__knob{width:calc(var(--rvt-knob) + var(--rvt-u))}
+.rvt:active .rvt__input:checked + .rvt__sky .rvt__knob{translate:calc(var(--rvt-travel) - var(--rvt-u)) 0}
+
+/* Viền tiêu điểm cho người dùng bàn phím */
+.rvt__input:focus-visible + .rvt__sky{outline:2px solid #fff;outline-offset:3px}
+
+/* Con trỏ: dùng con trỏ radar của trang (có chuột) */
+html.has-radar:not(.mobile) .rvt,html.has-radar:not(.mobile) .rvt *{cursor:none!important}
+
+@media (prefers-reduced-motion:reduce){
+  .rvt,.rvt__sky::before,.rvt__halo,.rvt__knob,.rvt__knob::before,.rvt__knob::after,.rvt__clouds,.rvt__stars{transition:none}
+}
