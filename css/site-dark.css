@@ -1,0 +1,92 @@
+/* ==========================================================================
+   GIAO DIỆN TỐI (DARK MODE) CỦA WEBSITE — tham khảo hai thiết kế Canva "LAPTOP RADAR VINH" và "MOBIE RADAR VINH".
+   - Chỉ BỔ SUNG: toàn bộ quy tắc nằm dưới html[data-theme="dark"]; giao diện sáng (main.css) không bị sửa, nên khi về Light mọi màu cũ tự trở lại.
+   - Chỉ đổi màu/lớp phủ của website (nền trang, dải nền chữ, thẻ chữ, tiêu đề, lớp phủ ảnh). Không đổi bố cục, kích thước, chuyển động.
+   - TÁCH BIỆT với thời tiết: không có quy tắc nào nhắm vào .rv-weather / #rv-weather / iframe bảng, không dùng filter, opacity, invert hay
+     thuộc tính toàn cục nào lên phần tử cha của bảng. Bảng thời tiết có hệ màu ngày/đêm riêng theo logic thời tiết.
+   - Không đổi <meta name="color-scheme"> (đổi sẽ làm iframe trong suốt của bảng bị nền đặc).
+   Màu là ước lượng từ ảnh xem trước Canva: chỉnh tại 6 biến ngay dưới đây.
+   ========================================================================== */
+html[data-theme="dark"]{
+  --rvd-bg:#0b1530;          /* nền trang, khe giữa các ảnh */
+  --rvd-band:#0f1c3c;        /* ba dải nền chữ (laptop) và lớp phủ khi nổi ảnh */
+  --rvd-card:rgba(30,43,80,.88);   /* thẻ chữ (mobile): navy */
+  --rvd-ink:#1f2d54;         /* chữ navy trên ô "ĐỘI RADAR VINH" sáng (mobile) */
+  --rvd-title:#fff3c4;       /* tiêu đề lớn: kem nhạt */
+  --rvd-float:#16213a;       /* nền khi ở chế độ nổi ảnh */
+  --rvd-cell:rgba(255,248,225,.7);  /* nền ô ĐỘI RADAR VINH (điện thoại): kem #fff8e1, giữ độ trong .7 */
+  --mt-cell-bg:var(--rvd-cell);
+  --glow:255,248,225;        /* quầng sáng khi di chuột vào chữ: kem #fff8e1 (cùng màu chữ nhỏ) */
+  --rvd-small:#fff8e1;       /* chữ nhỏ trên các ô: kem nhạt (giao diện sáng giữ trắng) */
+  --ink-small:var(--rvd-small);
+  --band:var(--rvd-band); --band-opacity:.72;   /* biến sẵn có của ba dải */
+}
+
+/* Nền */
+html[data-theme="dark"],html[data-theme="dark"] body,
+html[data-theme="dark"] #home,html[data-theme="dark"] .stage,
+html[data-theme="dark"].mobile #home,html[data-theme="dark"].mobile #cards,
+html[data-theme="dark"] #nj{background:var(--rvd-bg)}
+html[data-theme="dark"] #veil{background:var(--rvd-bg)}
+html[data-theme="dark"].float-on.float-hov .stage,
+html[data-theme="dark"].mobile.float-on.float-hov #cards{background-color:var(--rvd-float)}
+
+/* Chữ */
+html[data-theme="dark"] .title{color:var(--rvd-title)}
+html[data-theme="dark"] .title-link:hover .txt,html[data-theme="dark"] .title-link:focus-visible .txt{--glow:255,243,196}
+html[data-theme="dark"] .mpage .mtitle a{color:var(--rvd-title)}
+
+/* Thẻ chữ mobile */
+/* thẻ mobile là kính (weather-board.css: html.mobile .mpage .m:not(.mt-cell)) -> giữ nguyên lớp sáng/kính/viền/bóng, chỉ đổi màu nền xanh #496592 sang navy */
+html[data-theme="dark"].mobile .mpage .m:not(.mt-cell){background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,0) 50%,rgba(255,255,255,.07)),var(--rvd-card)}
+html[data-theme="dark"] .mpage .m:not(.mt-cell){background-color:var(--rvd-card)}
+html[data-theme="dark"] .mpage .m.mt-cell{background:var(--mt-cell-bg);color:var(--rvd-ink)}
+html[data-theme="dark"] #nj .c{background:var(--rvd-card)}
+html[data-theme="dark"] #nj .ct{color:var(--rvd-ink)}
+
+/* Lớp phủ khi chọn nổi ảnh (đang là xanh #496592 ở giao diện sáng) */
+html[data-theme="dark"] .tile::after,html[data-theme="dark"] .mf::after{background:var(--rvd-band)}
+
+/* Ảnh: phủ tối xanh đêm nhẹ ở một lớp riêng nằm TRÊN ảnh, DƯỚI chữ/dải (ảnh đang được chọn nổi lên vẫn nằm trên lớp này nên vẫn sáng).
+   Phần tử luôn tồn tại (trong suốt ở giao diện sáng) để màu chuyển được mềm; không nhận chuột. */
+.lyr-img::after,.mlayer::after{content:"";position:absolute;inset:0;z-index:40;pointer-events:none;background:#081028;opacity:0}
+html[data-theme="dark"] .lyr-img::after,html[data-theme="dark"] .mlayer::after{opacity:.38}
+/* Chế độ nổi ảnh (giao diện tối): trước đây ảnh đang chọn "đi qua" lớp phủ tối chung bằng z-index (lên z>=50 rồi tụt về auto sau 1,5 giây) nên
+   sáng/tối NHẢY tức thì (lúc chọn ảnh, lúc rời ảnh và lúc thoát). Giờ trong chế độ nổi mỗi ảnh tự mang một lớp tối giống hệt lớp phủ chung
+   (::before, cùng màu #081028, cùng độ mờ .38) còn lớp phủ chung tắt đi => độ tối của từng ảnh chỉ đổi bằng transition opacity, không phụ thuộc z-index.
+   Lớp phủ chung chỉ trở lại ở bước cuối của lúc thoát (float-swap), khi mọi ảnh đã về z-index thường, bằng một cross-fade ngắn. Hình ảnh các trạng thái cuối giữ nguyên. */
+html[data-theme="dark"] .tile::before,html[data-theme="dark"] .mf::before{content:"";position:absolute;inset:0;z-index:2;background:#081028;opacity:0;pointer-events:none;transition:opacity var(--lum-exit) var(--lum-ease)}
+html[data-theme="dark"].float-on .tile:not([data-lv])::before,html[data-theme="dark"].float-on .mf:not([data-lv])::before,
+html[data-theme="dark"].float-out .tile::before,html[data-theme="dark"].float-out .mf::before{opacity:.38}
+html[data-theme="dark"].float-on .tile::before,html[data-theme="dark"].float-on .mf::before{transition-duration:var(--lum-dur)}
+html[data-theme="dark"].float-on.float-hov .tile:not([data-lv])::before,html[data-theme="dark"].float-on.float-hov .mf:not([data-lv])::before{transition-delay:var(--lum-lag)}   /* cùng độ trễ với lớp dim của ảnh vừa rời */
+html[data-theme="dark"].float-on .lyr-img::after,html[data-theme="dark"].float-on .mlayer::after,
+html[data-theme="dark"].float-out .lyr-img::after,html[data-theme="dark"].float-out .mlayer::after{opacity:0}
+html[data-theme="dark"].float-on .lyr-img::after,html[data-theme="dark"].float-on .mlayer::after{transition:opacity var(--lum-dur) var(--lum-ease) .04s}   /* trễ 40ms: lớp chung tắt chậm hơn lớp riêng từng ảnh bật lên một nhịp nhỏ => tổng độ tối không tụt giữa chừng */
+html[data-theme="dark"].float-swap .lyr-img::after,html[data-theme="dark"].float-swap .mlayer::after{transition:opacity var(--lum-swap) var(--lum-ease)}
+html[data-theme="dark"].float-swap .tile::before,html[data-theme="dark"].float-swap .mf::before{transition-duration:var(--lum-swap);transition-delay:.04s}   /* như trên, chiều ngược lại */
+/* khe trắng/nền giữa các ảnh trước đây cũng nằm dưới lớp phủ chung (.38) => bù đúng màu đó vào nền khi lớp phủ chung tắt, để các đường kẻ giữ nguyên màu */
+html[data-theme="dark"].float-on .stage,html[data-theme="dark"].float-out .stage,html[data-theme="dark"].mobile.float-on #cards,html[data-theme="dark"].mobile.float-out #cards{background-color:color-mix(in srgb,#081028 38%,var(--rvd-bg))}
+html[data-theme="dark"].float-on.float-hov .stage,html[data-theme="dark"].mobile.float-on.float-hov #cards{background-color:color-mix(in srgb,#081028 38%,var(--rvd-float))}
+@media (prefers-reduced-motion:reduce){html[data-theme="dark"] .tile::before,html[data-theme="dark"] .mf::before,html[data-theme="dark"] .lyr-img::after,html[data-theme="dark"] .mlayer::after{transition:none!important}}   /* * không khớp phần tử giả ::before/::after nên khai báo riêng */
+/* lớp ảnh mobile không tự tạo ngữ cảnh xếp chồng: cô lập để lớp phủ chỉ nằm TRÊN ảnh, còn thẻ chữ và tiêu đề (lớp .mtext) vẫn nằm trên cùng */
+html[data-theme="dark"] .mlayer{isolation:isolate}
+
+/* Chuyển màu mềm: chỉ bật trong ~1 giây sau khi người dùng gạt nút (lúc tải trang không có hiệu ứng chuyển) */
+html.rvt-anim,html.rvt-anim body,html.rvt-anim #home,html.rvt-anim .stage,html.rvt-anim #cards,
+html.rvt-anim .band,html.rvt-anim .title,html.rvt-anim .mpage .mtitle a,html.rvt-anim #veil{transition:background-color .6s ease,color .6s ease}
+html.rvt-anim .mpage .m{transition:transform .45s cubic-bezier(.22,1,.36,1),filter .3s,background-color .6s ease,color .6s ease}
+html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:opacity .6s ease}
+@media (prefers-reduced-motion:reduce){
+  html.rvt-anim,html.rvt-anim *,html.rvt-anim .lyr-img::after,html.rvt-anim .mlayer::after{transition:none!important}
+}
+
+/* ===== Con trỏ Radar (chỉ giao diện tối): đổi màu sang kem #fff8e1, giữ nguyên hình dạng/kích thước/nét/chuyển động =====
+   Con trỏ là SVG dựng bằng JS với thuộc tính stroke/fill cố định (#fff, #9CC8FF); quy tắc CSS này ghi đè bằng độ ưu tiên cao hơn, không sửa main.js */
+html[data-theme="dark"] .radar-cursor .rc-s,
+html[data-theme="dark"] .radar-cursor #rcsweep path[stroke]{stroke:#fff8e1}                        /* trục chữ thập, hai vòng tròn, đường quét */
+html[data-theme="dark"] .radar-cursor #rcg stop{stop-color:#fff8e1}                                 /* vệt quét mờ dần */
+html[data-theme="dark"] .radar-cursor .rc-c{fill:#fff8e1}                                           /* chấm tâm */
+html[data-theme="dark"] .radar-cursor.rc-center .rc-c{fill:#fff8e1;stroke:#fff8e1}                 /* chấm tâm khi sáng lên ở nút trung tâm */
+html[data-theme="dark"] .radar-cursor #rcdot1{fill:#fff8e1}                                         /* quầng của vòng tròn định vị */
+html[data-theme="dark"] .radar-cursor #rcdot2{fill:#fff8e1;stroke:#fff8e1}                          /* vòng tròn định vị khi di chuột vào chữ */
