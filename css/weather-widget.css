@@ -1,0 +1,307 @@
+/* ===== Widget thời tiết Vinh, Nghệ An — mọi class đều có tiền tố rv-weather- (không đụng CSS cũ của trang) ===== */
+.rv-weather{position:absolute;left:0;top:0;width:0;height:0;z-index:80;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .45s ease,visibility 0s linear .45s;
+  font-family:Inter,"Segoe UI","Helvetica Neue",Arial,system-ui,sans-serif;color:#fff;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;text-size-adjust:100%;--rvw-p1:#2a78e0;--rvw-p2:#1750b8}
+.rv-weather.rv-weather-ready{opacity:1;visibility:visible;transition-delay:0s}
+.rv-weather *,.rv-weather *::before,.rv-weather *::after{box-sizing:border-box}
+:where(.rv-weather) button{font:inherit;color:inherit;margin:0;padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.rv-weather svg{display:block}
+.rv-weather-box{position:absolute;pointer-events:none;transform-origin:0 0}
+/* chỉ hiện đúng biến thể theo bố cục của trang (desktop / mobile) */
+html:not(.mobile) .rv-weather .rv-weather-m,html.mobile .rv-weather .rv-weather-d{display:none!important}
+.rv-weather-d.rv-weather-box,.rv-weather-box.rv-weather-d{width:456px;height:272px}
+
+/* ---------- THẺ MỞ RỘNG ---------- */
+.rv-weather-card{position:absolute;left:0;top:0;overflow:hidden;color:#fff;background:linear-gradient(180deg,var(--rvw-g1,#10286a),var(--rvw-g2,#10286a));border:1px solid rgba(255,255,255,.30);border-radius:22px;pointer-events:auto;
+  box-shadow:0 16px 38px rgba(4,16,60,.48),0 3px 9px rgba(4,16,60,.28);clip-path:inset(0 0 0 0 round 22px);
+  transition:clip-path .62s cubic-bezier(.22,1,.36,1),opacity .1s ease 0s}
+.rv-weather-card.rv-weather-d{width:456px;height:272px}
+.rv-weather-info{position:relative;overflow:hidden;text-shadow:0 1px 3px rgba(2,10,45,.45)}
+.rv-weather-d .rv-weather-info{height:168px}
+.rv-weather-scene{position:absolute;inset:0;width:100%;height:100%}
+.rv-weather-scene svg{width:100%;height:100%;display:block}
+.rv-weather-scrim{position:absolute;inset:0;background:radial-gradient(150px 86px at 20% 60%,rgba(4,16,64,.34),transparent 72%),radial-gradient(135px 92px at 83% 48%,rgba(4,16,64,.30),transparent 72%)}
+.rv-weather-info>*:not(.rv-weather-scene):not(.rv-weather-scrim){position:absolute}
+.rv-weather-left{left:14px;top:12px;bottom:14px;width:200px;display:flex;flex-direction:column}
+.rv-weather-row1{display:flex;align-items:center;gap:7px;height:30px}
+.rv-weather-close{width:28px;height:28px;border-radius:50%;display:grid!important;place-items:center;flex:none;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.42)!important;transition:background .2s,transform .2s}
+.rv-weather-close:hover{background:rgba(255,255,255,.26)!important}.rv-weather-close:active{transform:scale(.92)}
+.rv-weather-close svg{width:16px;height:16px}
+.rv-weather-ci{width:28px;height:28px;flex:none}.rv-weather-ci svg{width:100%;height:100%;filter:drop-shadow(0 1px 3px rgba(0,20,70,.4))}
+.rv-weather-ct{font-size:19px;font-weight:500;white-space:nowrap}
+.rv-weather-temp{margin:8px 0 0 8px;font-size:78px;line-height:.95;font-weight:300;letter-spacing:-.02em}
+.rv-weather-hilo{margin:auto 0 0 8px;font-size:18px}
+.rv-weather-right{right:18px;top:12px;bottom:12px;width:224px;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+.rv-weather-time{font-size:44px;line-height:1;font-weight:300;display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.rv-weather-utc{font-size:19px;margin-top:6px;display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.rv-weather-tag{font-size:9px;font-weight:700;letter-spacing:.06em;line-height:1;padding:4px 8px;border-radius:999px;text-transform:uppercase;white-space:nowrap;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.34)}
+.rv-weather-date{font-size:12.5px;margin-top:9px;text-transform:uppercase;letter-spacing:.02em;font-weight:500}
+.rv-weather-lunar{font-size:11.5px;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;opacity:.95}
+.rv-weather-place{margin-top:auto;font-size:17px}
+.rv-weather-met{left:112px;right:128px;bottom:12px;display:flex;justify-content:center;gap:5px}
+.rv-weather-chip{display:flex;align-items:center;gap:4px;padding:4px 7px 4px 5px;border-radius:999px;background:rgba(6,22,80,.38);border:1px solid rgba(255,255,255,.24);font-size:10.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;text-shadow:none}
+.rv-weather-chip svg{width:12px;height:12px;flex:none}
+.rv-weather-days{display:flex;height:104px;background:linear-gradient(180deg,rgba(8,30,92,.58),rgba(6,22,74,.80));border-top:1px solid rgba(255,255,255,.18)}
+.rv-weather-day{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 2px;box-shadow:inset -1px 0 0 rgba(255,255,255,.10)}
+.rv-weather-day b{font-size:12.5px;font-weight:700;letter-spacing:.03em}.rv-weather-day span{font-size:11px;font-weight:500}.rv-weather-day i{font-style:normal;font-size:9.5px;opacity:.78}
+.rv-weather-day .rv-weather-di{width:28px;height:28px;margin:2px 0 1px}.rv-weather-di svg{width:100%;height:100%}
+.rv-weather-day em{font-style:normal;font-size:9.5px;opacity:.82;line-height:1.1;min-height:10px;text-align:center}.rv-weather-day u{text-decoration:none;font-size:12px;font-weight:600}
+
+/* ---------- NÚT THU GỌN — viên thuốc kính mờ: [biểu tượng] [nhiệt độ] | [giờ] [thứ + ngày] [mũi tên] (theo ảnh mẫu) ---------- */
+.rv-weather-pill{position:absolute;left:0;top:0;display:flex;align-items:center;color:#fff;text-align:left;pointer-events:none;opacity:0;transform:scale(.55);transform-origin:0 0;overflow:hidden;
+  background:linear-gradient(180deg,var(--rvw-p1),var(--rvw-p2));border:1.5px solid rgba(160,205,255,.66);
+  box-shadow:0 14px 30px rgba(4,16,60,.5),0 0 0 1px rgba(60,120,255,.18),0 0 22px rgba(70,140,255,.28),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -14px 24px rgba(0,0,40,.22);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  text-shadow:0 1px 2px rgba(2,10,45,.5);transition:opacity .2s ease,transform .45s cubic-bezier(.22,1,.36,1)}
+@supports (background:color-mix(in srgb,red 50%,transparent)){.rv-weather-pill{background:linear-gradient(180deg,color-mix(in srgb,var(--rvw-p1) 80%,transparent),color-mix(in srgb,var(--rvw-p2) 88%,transparent))}}
+.rv-weather-pill::before{content:"";position:absolute;left:6%;right:6%;top:2px;height:36%;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.26),transparent);pointer-events:none}
+.rv-weather-pill>*{position:relative}
+.rv-weather-pill:focus-visible,.rv-weather-close:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 6px rgba(7,20,70,.9)}
+.rv-weather-pill .pi{flex:none;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.14),rgba(2,14,80,.42) 72%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+.rv-weather-pill .pi svg{overflow:visible;filter:drop-shadow(0 2px 4px rgba(0,20,70,.45))}
+.rv-weather-pill .pt{font-weight:300;letter-spacing:-.02em;line-height:1;white-space:nowrap}
+.rv-weather-pill .dv{width:1px;flex:none;background:linear-gradient(180deg,transparent,rgba(255,255,255,.42),transparent)}
+.rv-weather-pill .pk{display:flex;align-items:center;white-space:nowrap;font-variant-numeric:tabular-nums;border-radius:999px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.rv-weather-pill .pk svg{flex:none;opacity:.95}
+.rv-weather-pill .pdd{display:flex;flex-direction:column;line-height:1.05}
+.rv-weather-pill .pv{flex:none;border-radius:50%;display:grid;place-items:center;background:rgba(4,18,90,.48);border:1px solid rgba(255,255,255,.2);transition:background .2s}
+.rv-weather-pill:hover .pv{background:rgba(255,255,255,.22)}
+.rv-weather-pill .pv svg{width:55%;height:55%}
+/* ===== Viên thuốc theo bản thiết kế: LAPTOP = H6 (thanh ngang, biểu tượng tách riêng), MOBILE = M1 (dọc tối giản trong suốt) ===== */
+.rv-weather-pill{border:1.5px solid rgba(112,192,255,.88);
+  box-shadow:0 12px 28px rgba(2,10,50,.5),0 0 16px rgba(70,160,255,.5),inset 0 0 20px rgba(90,160,255,.2),inset 0 1px 0 rgba(255,255,255,.45)}
+.rv-weather-pill .pi{background:none;box-shadow:none;border-radius:0}
+.rv-weather-pill .pi svg{filter:drop-shadow(0 0 7px rgba(255,236,170,.38)) drop-shadow(0 3px 5px rgba(0,20,70,.4))}
+.rv-weather-pill .sep{flex:none;background:linear-gradient(180deg,transparent,rgba(190,220,255,.5),transparent)}
+.rv-weather-pill b{font-weight:inherit}
+.rv-weather-pill .pt{font-weight:300;line-height:1;letter-spacing:-.01em;white-space:nowrap}
+.rv-weather-pill .pcd,.rv-weather-pill .pl,.rv-weather-pill .pdt{white-space:nowrap;opacity:.92;line-height:1.1}
+.rv-weather-pill .pm{font-weight:400;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rv-weather-pill .pc{font-weight:500;line-height:1;white-space:nowrap}
+.rv-weather-pill:hover{box-shadow:0 12px 28px rgba(2,10,50,.5),0 0 22px rgba(90,180,255,.7),inset 0 0 20px rgba(90,160,255,.28),inset 0 1px 0 rgba(255,255,255,.5)}
+/* --- laptop H6: 340x72 (tỉ lệ 4.7:1 như bản vẽ) --- */
+.rv-weather-pill.rv-weather-d{width:340px;height:72px;border-radius:36px;padding:0 14px 0 8px;gap:0;justify-content:space-between}
+.rv-weather-pill.rv-weather-d .pi{width:64px;height:64px;margin-right:2px}.rv-weather-pill.rv-weather-d .pi svg{width:70px;height:70px}
+.rv-weather-pill.rv-weather-d .pb{display:flex;flex-direction:column;justify-content:center;gap:3px}
+.rv-weather-pill.rv-weather-d .pt{font-size:28px}.rv-weather-pill.rv-weather-d .pcd{font-size:11px}
+.rv-weather-pill.rv-weather-d .sep{width:1px;height:38px}
+.rv-weather-pill.rv-weather-d .pm{font-size:21px}.rv-weather-pill.rv-weather-d .pdt{font-size:10px}
+.rv-weather-pill.rv-weather-d .pcal{display:flex;align-items:center;gap:6px}
+.rv-weather-pill.rv-weather-d .pcal svg{width:19px;height:19px;flex:none;opacity:.95}
+.rv-weather-pill.rv-weather-d .pl{font-size:10px}.rv-weather-pill.rv-weather-d .pc{font-size:15.5px}
+/* --- mobile: viên thuốc dọc nhỏ gọn 32x112, nằm trong dải trống bên phải tiêu đề (mép chữ x=618u) nên KHÔNG che chữ RADAR; 5 thành phần: biểu tượng, nhiệt độ, giờ, ngày, mũi tên --- */
+.rv-weather-pill.rv-weather-m{left:auto;right:-2px;width:32px;height:112px;border-radius:16px;flex-direction:column;justify-content:space-between;align-items:center;padding:6px 1px 7px;transform-origin:100% 0;text-align:center;border-width:1px;
+  box-shadow:0 6px 16px rgba(2,10,50,.45),0 0 10px rgba(70,160,255,.4),inset 0 1px 0 rgba(255,255,255,.4)}
+.rv-weather-pill.rv-weather-m>*{flex:none}
+.rv-weather-pill.rv-weather-m .pi{width:26px;height:26px}.rv-weather-pill.rv-weather-m .pi svg{width:31px;height:31px}
+.rv-weather-pill.rv-weather-m .pt{font-size:15px;font-weight:400;line-height:1;letter-spacing:-.01em}
+.rv-weather-pill.rv-weather-m .pm{font-size:9.6px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
+.rv-weather-pill.rv-weather-m .pdt{font-size:7.6px;font-weight:500;line-height:1;opacity:.9;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rv-weather-pill.rv-weather-m .pv{width:13px;height:13px;display:grid;place-items:center;border-radius:50%;background:rgba(4,18,90,.5);border:1px solid rgba(190,220,255,.4)}.rv-weather-pill.rv-weather-m .pv svg{width:8px;height:8px}
+/* chỉ báo mở rộng (mũi tên) cho thanh ngang laptop */
+.rv-weather-pill.rv-weather-d .pv{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:rgba(4,18,90,.5);border:1px solid rgba(190,220,255,.4);margin-left:4px}.rv-weather-pill.rv-weather-d .pv svg{width:13px;height:13px}
+.rv-weather-pill.rv-weather-d{padding:0 10px 0 5px}.rv-weather-pill.rv-weather-d .pi{width:60px;height:60px;margin-right:0}.rv-weather-pill.rv-weather-d .pi svg{width:66px;height:66px}
+
+/* ---------- PANEL MỞ RỘNG TRÊN ĐIỆN THOẠI (dọc, hẹp, dự báo 3 ngày) ---------- */
+.rv-weather-box.rv-weather-m{width:172.5px;transform-origin:100% 0}
+.rv-weather-card.rv-weather-m{width:172.5px;max-height:var(--rvw-maxh,640px);display:flex;flex-direction:column;border-radius:20px;overflow:hidden;position:relative;clip-path:inset(0 0 0 0 round 20px);transition:clip-path .62s cubic-bezier(.22,1,.36,1),opacity .1s ease 0s}
+.rv-weather-m .rv-weather-info{height:124px;flex:none}
+.rv-weather-m .rv-weather-left{left:8px;top:8px;bottom:8px;width:100px}
+.rv-weather-m .rv-weather-row1{height:26px;gap:5px}.rv-weather-m .rv-weather-close{width:24px;height:24px}.rv-weather-m .rv-weather-close svg{width:14px;height:14px}
+.rv-weather-m .rv-weather-ci{width:24px;height:24px}.rv-weather-m .rv-weather-ct{font-size:12.5px;white-space:normal;line-height:1.05}
+.rv-weather-m .rv-weather-temp{font-size:50px;margin:12px 0 0 4px}
+.rv-weather-m .rv-weather-r2{right:8px;top:42px;width:80px;text-align:right;font-size:12.5px;display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+.rv-weather-m .rv-weather-r2 .pl{font-size:10.5px;opacity:.95;margin-top:2px}
+.rv-weather-mscroll{overflow-y:auto;overscroll-behavior:contain;flex:1 1 auto;min-height:0;background:linear-gradient(180deg,rgba(8,30,92,.80),rgba(6,22,74,.92))}
+.rv-weather-mclk{padding:9px 10px 6px}
+.rv-weather-mclk .t1{display:flex;align-items:center;gap:6px;font-size:27px;line-height:1;font-weight:300;font-variant-numeric:tabular-nums}
+.rv-weather-mclk .t2{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:15px;font-variant-numeric:tabular-nums}
+.rv-weather-mclk .rv-weather-tag{font-size:7.5px;padding:3px 6px}
+.rv-weather-mclk .d1{margin-top:6px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.01em}.rv-weather-mclk .d2{margin-top:1px;font-size:9.5px;text-transform:uppercase;opacity:.9}
+.rv-weather-mmet{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:2px 10px 8px}
+.rv-weather-mmet .rv-weather-chip{flex-direction:column;gap:2px;padding:5px 2px;border-radius:12px;font-size:9.5px;justify-content:center;text-align:center}.rv-weather-mmet .rv-weather-chip svg{width:13px;height:13px}
+.rv-weather-mfc{padding:0 6px 8px}
+.rv-weather-mrow{display:grid;grid-template-columns:38px 28px 1fr;align-items:center;gap:6px;padding:5px 4px;border-top:1px solid rgba(255,255,255,.14)}
+.rv-weather-mrow:first-child{border-top:0}
+.rv-weather-mrow .a{display:flex;flex-direction:column;line-height:1.15}.rv-weather-mrow .a b{font-size:11.5px}.rv-weather-mrow .a span{font-size:9.5px;opacity:.9}
+.rv-weather-mrow .rv-weather-di{width:28px;height:28px}
+.rv-weather-mrow .c{display:flex;flex-direction:column;align-items:flex-end;line-height:1.15;text-align:right}.rv-weather-mrow .c b{font-size:11.5px}.rv-weather-mrow .c span{font-size:9px;opacity:.85}
+
+/* ---------- Chuyển cảnh thu gọn <-> mở rộng: thẻ co về đúng hình viên thuốc trong lúc nội dung mờ đi ---------- */
+.rv-weather-card .rv-weather-info,.rv-weather-card .rv-weather-days,.rv-weather-card .rv-weather-mscroll{transition:opacity .3s ease .12s}
+.rv-weather:not(.rv-weather-open) .rv-weather-card{opacity:0;pointer-events:none;transition:clip-path .5s cubic-bezier(.65,0,.3,1),opacity .16s ease .36s}
+.rv-weather:not(.rv-weather-open) .rv-weather-card.rv-weather-d{clip-path:inset(0 calc(100% - 340px) calc(100% - 72px) 0 round 36px)}
+.rv-weather:not(.rv-weather-open) .rv-weather-card.rv-weather-m{clip-path:inset(0 0 calc(100% - 112px) calc(100% - 32px) round 16px)}
+.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-info,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-days,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-mscroll{opacity:0;transition:opacity .18s ease}
+.rv-weather:not(.rv-weather-open) .rv-weather-pill{opacity:1;transform:none;pointer-events:auto;transition:opacity .28s ease .3s,transform .5s cubic-bezier(.22,1,.36,1) .28s}
+.rv-weather.rv-weather-open .rv-weather-pill{pointer-events:none}
+
+/* ---------- Hoạt cảnh nhẹ trong cảnh nền (tắt khi giảm chuyển động) ---------- */
+.rv-weather .rvd{animation:rvwDrift 18s ease-in-out infinite alternate}.rv-weather .rvd.b{animation-duration:26s;animation-delay:-9s}
+.rv-weather .rvt{animation:rvwTw 3.8s ease-in-out infinite}
+.rv-weather .rvr{animation:rvwRain .9s linear infinite}
+.rv-weather .rvs{transform-box:fill-box;transform-origin:center;animation:rvwPulse 6s ease-in-out infinite}
+@keyframes rvwDrift{from{transform:translateX(-12px)}to{transform:translateX(16px)}}
+@keyframes rvwTw{50%{opacity:.55}}
+@keyframes rvwRain{0%{transform:translate(2px,-8px);opacity:.15}30%{opacity:1}100%{transform:translate(-6px,14px);opacity:.1}}
+@keyframes rvwPulse{50%{transform:scale(1.08);opacity:.88}}
+/* ---------- Trạng thái tải / lỗi ---------- */
+.rv-weather[data-state="loading"] .rv-weather-temp,.rv-weather[data-state="loading"] .rv-weather-pill .pt{opacity:.55}
+.rv-weather-err{display:none;position:absolute;left:12px;right:12px;bottom:8px;text-align:center;font-size:11px;background:rgba(5,15,60,.7);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:4px 6px;pointer-events:auto}
+.rv-weather[data-state="error"] .rv-weather-err,.rv-weather[data-state="loading"] .rv-weather-err{display:block}
+.rv-weather-err button{margin-left:6px;font-weight:700;text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.rv-weather *,.rv-weather *::before{animation:none!important;transition-duration:.01ms!important;transition-delay:0s!important}}
+
+/* ---------- Tinh chỉnh thẻ mở rộng theo ảnh mẫu ---------- */
+.rv-weather-card{border:1.5px solid rgba(120,188,255,.78)}
+.rv-weather-d.rv-weather-card{background:linear-gradient(180deg,var(--rvw-g1,#10286a),var(--rvw-g2,#10286a) 168px,var(--rvw-g2,#10286a))}
+.rv-weather-m.rv-weather-card{background:linear-gradient(180deg,var(--rvw-g1,#10286a),var(--rvw-g2,#10286a) 124px,var(--rvw-g2,#10286a))}
+.rv-weather-scrim{opacity:.35}
+.rv-weather-m .rv-weather-scene .body{translate:40px 12px}
+/* chuyển thu/mở: giữ nguyên nền minh hoạ, chỉ làm mờ chữ -> không bị khối xanh phẳng giữa chừng */
+.rv-weather-card .rv-weather-left,.rv-weather-card .rv-weather-right,.rv-weather-card .rv-weather-r2,.rv-weather-card .rv-weather-met{transition:opacity .3s ease .14s}
+.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-info{opacity:1;transition:none}
+.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-days,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-mscroll{opacity:1;transition:none}
+.rv-weather-card .rv-weather-days>*,.rv-weather-card .rv-weather-mscroll>*{transition:opacity .3s ease .14s}
+.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-days>*,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-mscroll>*{opacity:0;transition:opacity .14s ease}
+.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-left,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-right,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-r2,.rv-weather:not(.rv-weather-open) .rv-weather-card .rv-weather-met{opacity:0;transition:opacity .14s ease}
+.rv-weather-days{background:linear-gradient(180deg,var(--rvw-d1,#0a2a70),var(--rvw-d2,#08225e));border-top:1px solid rgba(190,220,255,.26)}
+.rv-weather-day{box-shadow:inset -1px 0 0 rgba(190,220,255,.2)}
+.rv-weather-ci{display:grid;place-items:center;border-radius:50%}
+.rv-weather-d .rv-weather-ci{width:36px;height:36px}.rv-weather-d .rv-weather-ci svg{width:30px;height:30px}
+.rv-weather[data-theme="dawn"] .rv-weather-ci,.rv-weather[data-theme="night"] .rv-weather-ci,.rv-weather[data-theme="nightrain"] .rv-weather-ci,.rv-weather[data-theme="nightcloudy"] .rv-weather-ci,.rv-weather[data-theme="coldnight"] .rv-weather-ci,.rv-weather[data-theme="cold"] .rv-weather-ci,.rv-weather[data-theme="rain"] .rv-weather-ci,.rv-weather[data-theme="cloudy"] .rv-weather-ci{background:radial-gradient(circle at 40% 30%,rgba(255,255,255,.34),rgba(120,170,255,.16) 70%);border:1px solid rgba(255,255,255,.36);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.rv-weather-d .rv-weather-met{display:none}                          /* ảnh mẫu không có hàng độ ẩm/gió/áp suất ở bản máy tính (dữ liệu vẫn có ở bản điện thoại) */
+.rv-weather-d .rv-weather-day i,.rv-weather-d .rv-weather-day em{display:none}
+.rv-weather-d .rv-weather-day b{font-size:13px}.rv-weather-d .rv-weather-day span{font-size:11px;opacity:.9}
+.rv-weather-d .rv-weather-day .rv-weather-di{width:32px;height:32px;margin:6px 0 5px}
+.rv-weather-d .rv-weather-day u{font-size:12.5px;font-weight:600}
+.rv-weather-d .rv-weather-place{display:flex;align-items:center;gap:9px}
+.rv-weather-d .rv-weather-close{width:26px;height:26px}.rv-weather-d .rv-weather-close svg{width:15px;height:15px}
+
+.rv-weather-utc small,.rv-weather-mclk .t2 small{font-size:.58em;opacity:.85;margin-left:3px;white-space:nowrap}
+.rv-weather-utc,.rv-weather-mclk .t2,.rv-weather-time,.rv-weather-mclk .t1{white-space:nowrap}
+
+/* ---------- Thiết kế theo ảnh tham chiếu: tỉ lệ chữ, ảnh nền, chiều sâu ---------- */
+.rv-weather-d .rv-weather-left{left:20px;top:12px;bottom:12px;width:190px}
+.rv-weather-d .rv-weather-ct{font-size:14.5px;font-weight:500}
+.rv-weather-d .rv-weather-ci{width:30px;height:30px}.rv-weather-d .rv-weather-ci svg{width:25px;height:25px}
+.rv-weather-d .rv-weather-temp{font-size:68px;margin:8px 0 0 4px;font-weight:300}
+.rv-weather-d .rv-weather-hilo{font-size:13.5px;margin-left:4px}
+.rv-weather-d .rv-weather-right{right:16px;top:10px;width:230px}
+.rv-weather-d .rv-weather-time{font-size:31px;gap:7px;font-weight:300}
+.rv-weather-d .rv-weather-utc{font-size:14px;margin-top:5px;font-weight:300}
+.rv-weather-d .rv-weather-tag{font-size:7.2px;padding:3.5px 8px;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-color:rgba(255,255,255,.28)}
+.rv-weather-d .rv-weather-date{font-size:9.6px;margin-top:8px}
+.rv-weather-d .rv-weather-lunar{font-size:8.6px}
+.rv-weather-d .rv-weather-place{font-size:12.5px}
+.rv-weather-d .rv-weather-close{width:22px;height:22px}
+.rv-weather-d .rv-weather-days{height:104px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 14px 18px -14px rgba(255,255,255,.16)}
+.rv-weather-d .rv-weather-day b{font-size:11px}.rv-weather-d .rv-weather-day span{font-size:9px}
+.rv-weather-d .rv-weather-day .rv-weather-di{width:26px;height:26px;margin:5px 0 4px}
+.rv-weather-d .rv-weather-day u{font-size:10.5px}
+.rv-weather-d .rv-weather-scrim{display:none}
+.rv-weather-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.16) 0,rgba(255,255,255,0) 16%),radial-gradient(130% 95% at 50% 38%,rgba(0,0,0,0) 56%,rgba(0,8,50,.4) 100%);
+  box-shadow:inset 0 0 0 1px rgba(150,205,255,.35),inset 0 0 26px rgba(70,150,255,.3)}
+
+/* ---------- Thẻ mobile theo ảnh tham chiếu ---------- */
+.rv-weather-m .rv-weather-left{width:92px}
+.rv-weather-m .rv-weather-r2{width:74px}
+.rv-weather-m .rv-weather-temp{font-size:46px;font-weight:300}
+.rv-weather-mscroll{background:transparent;overflow:visible;flex:none}
+.rv-weather-mclk{padding:9px 10px 9px}
+.rv-weather-mclk .t1{font-size:23px;gap:5px}
+.rv-weather-mclk .t2{font-size:13px;margin-top:4px;font-weight:300}
+.rv-weather-mclk .rv-weather-tag{font-size:6.8px;padding:3px 6px;background:rgba(255,255,255,.14);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-color:rgba(255,255,255,.28)}
+.rv-weather-mclk .d1{font-size:9px;margin-top:7px}.rv-weather-mclk .d2{font-size:8px}
+.rv-weather-mmet{display:none}
+.rv-weather-mfc{display:grid;grid-template-columns:repeat(3,1fr);padding:0;background:linear-gradient(180deg,var(--rvw-d1,#0a2a70),var(--rvw-d2,#08225e));border-top:1px solid rgba(190,220,255,.26);box-shadow:inset 0 14px 18px -14px rgba(255,255,255,.16)}
+.rv-weather-mrow{display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 2px 8px;border-top:0;box-shadow:inset -1px 0 0 rgba(190,220,255,.2);text-align:center}
+.rv-weather-mrow:last-child{box-shadow:none}
+.rv-weather-mrow .a{align-items:center}.rv-weather-mrow .a b{font-size:10.5px}.rv-weather-mrow .a span{font-size:8.5px}
+.rv-weather-mrow .rv-weather-di{width:24px;height:24px;margin:4px 0 3px}
+.rv-weather-mrow .c{align-items:center;text-align:center}.rv-weather-mrow .c b{font-size:10px}.rv-weather-mrow .c span{display:none}
+
+/* ===== THẺ THỜI TIẾT THEO THIẾT KẾ MỚI: kính mờ, viền cyan phát sáng, 4 vùng (đầu / chính / chỉ số / dự báo) ===== */
+.rv-weather-d.rv-weather-box,.rv-weather-box.rv-weather-d{width:456px;height:304px}
+.rv-weather-card.rv-weather-d{width:456px;height:304px}
+.rv-weather-card.rv-weather-d,.rv-weather-card.rv-weather-m{background:#0a2150;background:linear-gradient(160deg,color-mix(in srgb,var(--rvw-g1,#0a2a70) 34%,#06173f),color-mix(in srgb,var(--rvw-g2,#0a2a70) 26%,#071c4c));
+  border:1.5px solid rgba(70,185,255,.95);border-radius:26px;-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}
+.rv-weather-card.rv-weather-m{border-radius:22px}
+.rv-weather-card>.rv-weather-scene{position:absolute;inset:0;z-index:0;opacity:.2}
+.rv-weather-card .rv-weather-scrim{display:none}
+.rvx-glass{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(8,30,84,.55),rgba(6,22,62,.74))}
+.rvx-body{position:relative;z-index:2;display:flex;flex-direction:column;gap:8px;height:100%;padding:14px;box-sizing:border-box;color:#fff;text-shadow:0 1px 2px rgba(0,10,40,.45)}
+.rv-weather-card::after{content:"";position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,0) 14%);box-shadow:inset 0 0 0 1px rgba(150,215,255,.3),inset 0 0 30px rgba(60,170,255,.24)}
+.rvx-glow{position:absolute;inset:-5px;border-radius:30px;background:rgba(40,160,255,.6);filter:blur(14px);opacity:0;pointer-events:none;transition:opacity .45s ease}
+.rv-weather-open .rvx-glow{opacity:.5}
+.rvx-head{display:flex;align-items:center;justify-content:space-between;gap:8px;height:40px;flex:none}
+.rvx-loc{display:flex;align-items:center;gap:8px;min-width:0}
+.rvx-pin{width:32px;height:32px;flex:none;border-radius:10px;display:grid;place-items:center;background:rgba(255,255,255,.07);border:1px solid rgba(110,190,255,.32);color:#5cc4ff}.rvx-pin svg{width:18px;height:18px}
+.rvx-lt{display:flex;flex-direction:column;min-width:0}.rvx-lt b{font-size:15px;font-weight:600;line-height:1.15;white-space:nowrap}.rvx-lt small{font-size:9.5px;color:#8fd0ff;line-height:1.2}
+.rvx-clock{display:flex;align-items:baseline;gap:4px;margin-left:auto}
+.rvx-t{font-size:36px;font-weight:600;letter-spacing:-.01em;line-height:1;font-variant-numeric:tabular-nums}
+.rvx-s{font-size:14px;font-weight:500;color:#7fc8ff;font-variant-numeric:tabular-nums;min-width:17px}
+.rvx-head .rv-weather-close{position:static;flex:none;width:22px;height:22px;margin-left:2px}.rvx-head .rv-weather-close svg{width:13px;height:13px}
+.rvx-main{display:flex;gap:10px;align-items:center;height:104px;flex:none}
+.rvx-now{display:flex;align-items:center;gap:4px;width:222px;flex:none}
+.rvx-ic{width:74px;height:74px;flex:none;display:grid;place-items:center}.rvx-ic svg{width:80px;height:80px;overflow:visible;filter:drop-shadow(0 0 10px rgba(80,180,255,.55))}
+.rvx-tx{display:flex;flex-direction:column;gap:1px;min-width:0}
+.rvx-temp{font-size:46px;font-weight:700;line-height:1;letter-spacing:-.02em;white-space:nowrap}.rvx-temp small{font-size:19px;font-weight:600;margin-left:1px;vertical-align:top;position:relative;top:3px}
+.rvx-cond{font-size:14px;font-weight:500;margin-top:2px}.rvx-feel{font-size:10px;color:#7fcbff}
+.rvx-when{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rvx-date{font-size:12px;font-weight:500;white-space:nowrap}.rvx-lunar{font-size:9.5px;color:#8fd0ff;white-space:nowrap}
+.rvx-zones{display:flex;gap:6px;margin-top:6px}
+.rvx-zone{flex:1;display:flex;align-items:center;gap:5px;padding:5px 6px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid rgba(110,190,255,.26);min-width:0}.rvx-zone svg{width:14px;height:14px;flex:none;color:#cfe9ff}
+.rvx-zone small{display:block;font-size:7px;color:#9ad3ff;line-height:1.1;white-space:nowrap}.rvx-zone b{display:block;font-size:13px;font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums}
+.rvx-chips{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;height:38px;flex:none}
+.rvx-chip{display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(110,190,255,.24);min-width:0}.rvx-chip svg{width:17px;height:17px;flex:none;color:#7fd0ff}
+.rvx-chip small{display:block;font-size:8px;color:#9ad3ff;line-height:1.1}.rvx-chip b{display:block;font-size:13px;font-weight:600;line-height:1.15;white-space:nowrap}.rvx-chip i{display:block;font-size:6.6px;font-style:normal;opacity:.78;line-height:1.1;white-space:nowrap}
+.rvx-days{display:grid;grid-template-columns:repeat(5,1fr);flex:none;height:66px;margin-top:auto;padding:5px 2px 4px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(110,190,255,.24);box-sizing:border-box}
+.rvx-day{display:flex;flex-direction:column;align-items:center;justify-content:space-between;min-width:0}.rvx-day+.rvx-day{border-left:1px solid rgba(120,190,255,.2)}
+.rvx-day.today b{color:#bfe6ff}
+.rvx-day b{font-size:10px;font-weight:500;line-height:1.1;white-space:nowrap}.rvx-day span{font-size:8.6px;opacity:.82;line-height:1.1}
+.rvx-di{width:26px;height:26px}.rvx-di svg{width:100%;height:100%}
+.rvx-day u{text-decoration:none;font-size:10.5px;font-weight:600;line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rvx-empty{grid-column:1/-1;margin:auto;font-size:11px;opacity:.85}
+.rvx-body>.rv-weather-err{position:absolute;left:14px;right:14px;bottom:1px;height:12px;line-height:12px;font-size:8px;text-align:center;color:#ffd9a0;white-space:nowrap;overflow:hidden}
+.rvx-body>.rv-weather-err button{font:inherit;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:0 5px;margin-left:3px;cursor:pointer}
+/* chuyển thu/mở: chữ mờ dần, nền kính giữ nguyên */
+.rvx-body{transition:opacity .3s ease .14s}
+.rv-weather:not(.rv-weather-open) .rvx-body{opacity:0;transition:opacity .14s ease}
+/* ----- mobile (172.5px) ----- */
+.rv-weather-card.rv-weather-m{width:172.5px;display:flex;flex-direction:column;max-height:var(--rvw-maxh,640px)}
+.rv-weather-m .rvx-body{gap:7px;padding:10px;overflow-y:auto;height:auto;flex:1;min-height:0;scrollbar-width:none}.rv-weather-m .rvx-body::-webkit-scrollbar{display:none}
+.rv-weather-m .rvx-head{height:auto}
+.rv-weather-m .rvx-pin{width:24px;height:24px;border-radius:8px}.rv-weather-m .rvx-pin svg{width:14px;height:14px}
+.rv-weather-m .rvx-lt b{font-size:11.5px}.rv-weather-m .rvx-lt small{font-size:8px}
+.rv-weather-m .rvx-head .rv-weather-close{width:20px;height:20px}
+.rv-weather-m .rvx-now{width:auto;gap:2px}
+.rv-weather-m .rvx-ic{width:50px;height:50px}.rv-weather-m .rvx-ic svg{width:54px;height:54px}
+.rv-weather-m .rvx-temp{font-size:31px}.rv-weather-m .rvx-temp small{font-size:13px;top:2px}
+.rv-weather-m .rvx-cond{font-size:11px}.rv-weather-m .rvx-feel{font-size:8.2px}
+.rv-weather-m .rvx-when{gap:1px}
+.rv-weather-m .rvx-clock{margin:0}.rv-weather-m .rvx-t{font-size:28px}.rv-weather-m .rvx-s{font-size:11px;min-width:13px}
+.rv-weather-m .rvx-date{font-size:10px}.rv-weather-m .rvx-lunar{font-size:8px}
+.rv-weather-m .rvx-zones{margin-top:4px;gap:4px}.rv-weather-m .rvx-zone{padding:4px 5px}.rv-weather-m .rvx-zone small{font-size:6.4px}.rv-weather-m .rvx-zone b{font-size:11px}
+.rv-weather-m .rvx-chips{height:auto;gap:4px}
+.rv-weather-m .rvx-chip{flex-direction:column;align-items:flex-start;gap:2px;padding:5px 5px}.rv-weather-m .rvx-chip svg{width:12px;height:12px}
+.rv-weather-m .rvx-chip small{font-size:6.4px}.rv-weather-m .rvx-chip b{font-size:9.4px}.rv-weather-m .rvx-chip i{display:none}
+.rv-weather-m .rvx-days{grid-template-columns:repeat(3,1fr);height:auto;min-height:62px;margin-top:0;padding:5px 1px 4px}
+.rv-weather-m .rvx-day{gap:2px}.rv-weather-m .rvx-day b{font-size:8.6px}.rv-weather-m .rvx-day span{font-size:7.4px}.rv-weather-m .rvx-di{width:22px;height:22px}.rv-weather-m .rvx-day u{font-size:9px}
+.rv-weather-m .rvx-body>.rv-weather-err{position:static;height:auto;line-height:1.3;font-size:8px;white-space:normal}
+
+/* ===== Sửa lỗi hiển thị trên máy thật: chữ nhãn không tràn ô, cỡ chữ tối thiểu dễ đọc, ô gió 2 dòng ===== */
+.rvx-zones{align-items:stretch}
+.rvx-zone{min-width:0;padding:5px 6px;gap:5px}
+.rvx-zone>span{min-width:0;flex:1}
+.rvx-zone small{font-size:8px;white-space:normal;line-height:1.12;overflow-wrap:anywhere}
+.rvx-chips{height:42px}
+.rvx-chip>span{min-width:0}
+.rvx-chip small{font-size:8.6px;white-space:normal;line-height:1.12}
+.rvx-chip b{font-size:13px}
+.rvx-lt b{overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.rvx-day span{font-size:9px}
+.rv-weather-m .rvx-zone small{font-size:7.4px}
+.rv-weather-m .rvx-chip small{font-size:7.2px}
+.rv-weather-m .rvx-chip b{font-size:9.6px}
+.rv-weather-m .rvx-lt small{font-size:8.4px}
+.rv-weather-m .rvx-day span{font-size:8px}.rv-weather-m .rvx-day b{font-size:8.8px}
